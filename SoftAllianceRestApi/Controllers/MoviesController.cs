@@ -37,7 +37,7 @@ namespace SoftAllianceRestApi.Controllers
 
         }
 
-        [HttpPut("{movieId}")]
+        [HttpPut("/movies/update/{movieId}")]
         public async Task<ActionResult> UpdateMovies(int? movieId,MovieForCreateUpdateDto moviedto)
         {
 
@@ -45,37 +45,14 @@ namespace SoftAllianceRestApi.Controllers
             {
                 return BadRequest();
             }
-            var originalMovie = _mapper.Map<Movie>(moviedto);
+            var originalMovie = MapDto(moviedto);
 
             var result = await _movieService.EditMovieByIdAsync(movieId, originalMovie);
 
             return Ok(result);
         }
-        private Movie MapTODto(MovieForCreateUpdateDto dto)
-        {
-            Movie mov = new Movie();
-            mov.Photo = dto.Photo;
-            mov.Rating = dto.Rating;
-            mov.TicketPrice = dto.TicketPrice;
-            mov.Description = dto.Description;
-            mov.ReleaseDate = dto.ReleaseDate;
-            mov.Country = dto.Country;
-            mov.Name = dto.Name;
-            if (dto.genry.Any())
-            {
-                foreach( var ger in dto.genry)
-                {
-                    Genre gen = new Genre();
-                    gen.Name = ger;
-                    mov.Genres.Add(gen);
-                }
-            }
-           // mov.Genres.Add(new Genre())
 
-            return mov;
-        }
-
-        [HttpPost("/create")]
+        [HttpPost("/movies/create")]
         public async Task<IActionResult> CreateMovie(MovieForCreateUpdateDto moviedto)
         {
 
@@ -84,7 +61,7 @@ namespace SoftAllianceRestApi.Controllers
                 return BadRequest();
             }
             
-            var originalmovie = MapTODto(moviedto);
+            var originalmovie = MapDto(moviedto);
 
              await _movieService.AddMovieAsync(originalmovie);
 
@@ -92,13 +69,13 @@ namespace SoftAllianceRestApi.Controllers
             return CreatedAtAction(nameof(CreateMovie), new { id = originalmovie.Id }, originalmovie);
         }
 
-        [HttpGet]
+        [HttpGet("/movies/allmovies")]
             public async Task<ActionResult<IEnumerable<MovieDto>>> GetAllMovies()
             { 
 
                 return Ok(_mapper.Map<IEnumerable<MovieDto>>(await _movieService.GetAllMoviesAsync()));
             }
-        [HttpDelete("/{movieId}")]
+        [HttpDelete("/movies/delete/{movieId}")]
         public async Task<ActionResult<bool>> DeleteByID(int? movieId)
         {
 
@@ -113,7 +90,7 @@ namespace SoftAllianceRestApi.Controllers
         /// <param name="includePointsOfInterest">Whether or not to include the genre</param>
         /// <returns>An IActionResult</returns>
         /// <response code="200">Returns the requested movie</response>
-        [HttpGet("movieid/{movieId}")]
+        [HttpGet("/movies/{movieId}")]
             [ProducesResponseType(StatusCodes.Status200OK)]
             [ProducesResponseType(StatusCodes.Status404NotFound)]
             [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -127,6 +104,30 @@ namespace SoftAllianceRestApi.Controllers
                     return Ok(_mapper.Map<MovieDto>(movie));
               
             }
+        private Movie MapDto(MovieForCreateUpdateDto dto)
+        {
+            Movie mov = new Movie();
+            mov.Photo = dto.Photo;
+            mov.Rating = dto.Rating;
+            mov.TicketPrice = dto.TicketPrice;
+            mov.Description = dto.Description;
+            mov.ReleaseDate = dto.ReleaseDate;
+            mov.Country = dto.Country;
+            mov.Name = dto.Name;
+            if (dto.genry.Any())
+            {
+                foreach (var ger in dto.genry)
+                {
+                    Genre gen = new Genre();
+                    gen.Name = ger;
+                    mov.Genres.Add(gen);
+                }
+            }
+            // mov.Genres.Add(new Genre())
+
+            return mov;
         }
+    }
+
 
 }
