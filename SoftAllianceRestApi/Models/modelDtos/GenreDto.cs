@@ -1,0 +1,13 @@
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
+
+namespace SoftAllianceRestApi.Models.modelDto
+{
+    public class GenreDto
+    { 
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+
+    }
+}
